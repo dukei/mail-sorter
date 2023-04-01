@@ -30,7 +30,7 @@ class MailingStatsTracker {
     if (this.listIdToMailingId.has(listId)) {
       return this.listIdToMailingId.get(listId);
     }
-    const mailing = await this.mailingRepository.getByListId(listId);
+    const mailing = this.mailingRepository && await this.mailingRepository.getByListId(listId);
     if (mailing) {
       this.listIdToMailingId.set(listId, mailing.id);
       return mailing.id;
@@ -40,6 +40,10 @@ class MailingStatsTracker {
 
   async _modifyAddressCounters (failureInfo, actions) {
     const { diagnosticCode, dsnStatus, recipient, spam, status } = failureInfo;
+    if(!this.addressStatsRepository){
+        this.logger.debug(`${recipient}: not updated stats, addressStatsRepository is null`);
+	return;
+    }
     const stats = await this.addressStatsRepository.updateInTransaction(
       recipient, // find stats by this email
       async stats => { // if found, this will be executed as update transaction
@@ -74,7 +78,7 @@ class MailingStatsTracker {
       return;
     }
     
-    const mailing = await this.mailingRepository.updateInTransaction(
+    const mailing = this.mailingRepository && await this.mailingRepository.updateInTransaction(
       mailingId,
       async mailing => {
         mailing.undeliveredCount++;
