@@ -57,7 +57,7 @@ class MailServerMessageHandler {
 
   async _performAction (failureInfo, statsActions) {
     if (await this._shouldExclude(failureInfo)) {
-      const excluded = await this.userDatabase.disableEmailsForAddress(failureInfo.recipient);
+      const excluded = await this.userDatabase.disableEmailsForAddress(failureInfo.recipient, failureInfo.dsnStatus, failureInfo.diagnosticCode);
       if (excluded) {
         statsActions.push('disabled emails (excluded from mailing database)');
       }

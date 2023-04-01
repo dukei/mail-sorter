@@ -11,12 +11,6 @@ const MailServerMessageHandler = require('./handlers/MailServerMessageHandler');
 const AutoresponderMessageHandler = require('./handlers/AutoresponderMessageHandler');
 const MailboxSorterStatsCollector = require('./MailboxSorterStatsCollector');
 const UnsubscribeMessageHandler = require('./handlers/UnsubscribeMessageHandler');
-const { RedisMailingRepository } = require('mail-server/server/dist/RedisMailingRepository');
-const { RedisAddressStatsRepository } = require(
-  'mail-server/server/dist/RedisAddressStatsRepository'
-);
-const { SmtpMailSender } = require('mail-server/server/dist/SmtpMailSender');
-const { RedisConnectionPoolImpl } = require('mail-server/server/dist/RedisConnectionPool');
 const FailureInfoParser = require('./FailureInfoParser');
 const DsnParser = require('./DsnParser');
 const SpecialHeaderParser = require('./SpecialHeaderParser');
@@ -41,15 +35,9 @@ async function run (config, logger, actionLogger, database) {
   logger.verbose('Connecting...');
   await mailbox.initialize();
 
-  const redisConnectionPool = config.redis ? new RedisConnectionPoolImpl(
-    config.redis
-  ) : null;
-  const mailingRepository = redisConnectionPool ? new RedisMailingRepository(
-    redisConnectionPool, config.redis.prefixes
-  ) : null;
-  const addressStatsRepository = redisConnectionPool ? new RedisAddressStatsRepository(
-    redisConnectionPool, config.redis.prefixes
-  ) : null;
+  const redisConnectionPool = null;
+  const mailingRepository = null;
+  const addressStatsRepository = null;
   const sorter = createMailboxSorter({
     config, mailbox, logger, actionLogger, database, mailingRepository, addressStatsRepository
   });
@@ -87,11 +75,11 @@ function createMailboxSorter ({
     new DsnParser(logger), new SpecialHeaderParser(logger)
   );
   const statsTracker = new MailingStatsTracker(logger, mailingRepository, addressStatsRepository);
-  const sender = new SmtpMailSender({
+  const sender = null; /*new SmtpMailSender({
     from: config.mailer.from,
     host: config.mailer.host,
     port: config.mailer.port
-  });
+  }); */
   const mailingListDatabase = database;
   const handlerMap = {
     [MessageTypes.HUMAN]: new HumanMessageHandler(logger, sender, {

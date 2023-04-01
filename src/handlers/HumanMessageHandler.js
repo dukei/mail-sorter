@@ -1,6 +1,4 @@
 const moment = require('moment');
-const { Email } = require('mail-server/server/dist/Email');
-
 
 class HumanMessageHandler {
   constructor (logger, mailSender, config) {
@@ -29,7 +27,8 @@ class HumanMessageHandler {
   }
 
   async _forwardMessage (message) {
-    await this.mailSender.sendEmail(new Email({
+//    await this.mailSender.sendEmail(new Email(
+console.log(('Forwarding', {
       attachments: message.attachments,
       headers: {},
       html: message.html,
