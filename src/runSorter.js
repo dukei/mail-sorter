@@ -51,6 +51,7 @@ async function run (config, logger, actionLogger, database) {
 
   statsCollector.logStats();
   await mailbox.close();
+  await mailbox.end();
 
   logger.info('Done.');
 }

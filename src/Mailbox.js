@@ -22,6 +22,14 @@ class Mailbox {
     });
   }
 
+  async end() {
+	return new Promise((resolve, reject) => {
+            this.imapConnection.once('end', resolve);
+            this.imapConnection.once('error', reject);
+            this.imapConnection.end();  
+        });
+  }
+
   deleteMessage (messageId) {
     return this._addFlags(messageId, ['\\Deleted']);
   }
